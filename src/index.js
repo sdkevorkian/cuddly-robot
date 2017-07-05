@@ -69,6 +69,7 @@ class Game extends React.Component {
         this.setState({
             history: history.concat([{
                 squares: squares,
+                lastSquarePlayed: i
             }]),
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
@@ -80,13 +81,13 @@ class Game extends React.Component {
             stepNumber: step,
             xIsNext: (step % 2) ? false : true,
         });
-        console.log(step % 2);
     }
 
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
+        const lastClickedCoords = squareNumberToCoords(current.lastSquarePlayed);
         const moves = history.map((step, move) => {
             const desc = move ? 'Move #' + move : 'Game Start';
             return (
@@ -95,6 +96,8 @@ class Game extends React.Component {
                   </li>
             );
         });
+
+        const lastMove = !isNaN(current.lastSquarePlayed) ? 'Played @ (' + lastClickedCoords.x + ',' + lastClickedCoords.y + ')' : '';
 
         let status;
         if (winner) {
@@ -113,6 +116,7 @@ class Game extends React.Component {
               </div>
               <div className="game-info">
                 <div>{status}</div>
+                <div>{lastMove}</div>
                 <ol>{moves}</ol>
               </div>
             </div>
@@ -145,4 +149,31 @@ function calculateWinner(squares) {
             return squares[a];
         }
     }
+}
+
+function squareNumberToCoords(i) {
+    let x = i % 3 + 1;
+    let y;
+    switch (i) {
+        case 0:
+        case 1:
+        case 2:
+            y = 1;
+            break;
+        case 3:
+        case 4:
+        case 5:
+            y = 2;
+            break;
+        case 6:
+        case 7:
+        case 8:
+            y = 3;
+            break;
+        default:
+            y = "where did you even click"
+            break;
+    }
+
+    return { x: x, y: y };
 }
